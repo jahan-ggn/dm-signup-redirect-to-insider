@@ -6,6 +6,8 @@ export default {
   initialize() {
     withPluginApi((api) => {
       api.modifyClass("route:signup", {
+        pluginId: "dm-signup-redirect-to-insider",
+
         beforeModel(transition) {
           const siteSettings = getOwner(this).lookup("service:site-settings");
           const enable_discourse_connect =
