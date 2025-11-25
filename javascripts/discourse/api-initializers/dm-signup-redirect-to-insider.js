@@ -10,10 +10,9 @@ export default {
 
         beforeModel(transition) {
           const siteSettings = getOwner(this).lookup("service:site-settings");
-          const enable_discourse_connect =
-            siteSettings.enable_discourse_connect;
+          const sso_enabled = !siteSettings.enable_local_logins;
 
-          if (enable_discourse_connect) {
+          if (sso_enabled) {
             transition.abort();
             window.open(settings.sign_up_redirect_url, "_blank");
             return;
