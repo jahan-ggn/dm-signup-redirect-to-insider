@@ -1,26 +1,28 @@
-import { getOwner } from "@ember/owner";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 export default {
   name: "dm-signup-redirect-to-insider",
   initialize() {
     withPluginApi((api) => {
-      api.modifyClass("route:signup", {
-        pluginId: "dm-signup-redirect-to-insider",
+      const siteSettings = api.container.lookup("service:site-settings");
+      if (siteSettings.enable_local_logins) {
+        return;
+      }
 
-        beforeModel(transition) {
-          const siteSettings = getOwner(this).lookup("service:site-settings");
-          const sso_enabled = !siteSettings.enable_local_logins;
-
-          if (sso_enabled) {
-            transition.abort();
-            window.open(settings.sign_up_redirect_url, "_blank");
+      document.addEventListener(
+        "click",
+        (event) => {
+          const signUpButton = event.target.closest(".sign-up-button");
+          if (!signUpButton) {
             return;
           }
 
-          this._super(...arguments);
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          window.open(settings.sign_up_redirect_url, "_blank");
         },
-      });
+        { capture: true }
+      );
     });
   },
 };
